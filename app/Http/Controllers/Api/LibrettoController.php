@@ -1,44 +1,79 @@
 <?php
 
-namespace App\Http\Controllers\Api; 
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Models\Libretto;
+use App\Models\Author;
+use App\Models\Book;
+use App\Models\Genre;
+use App\Models\Review;
 
 class LibrettoController extends Controller
 {
-    public function index()
+    // Fetch all authors
+    public function authors()
     {
-        return Libretto::all();
+        return Author::all();
     }
 
-    public function store(Request $request)
+    // Fetch all books
+    public function books()
+    {
+        return Book::all();
+    }
+
+    // Fetch all genres
+    public function genres()
+    {
+        return Genre::all();
+    }
+
+    // Fetch all reviews
+    public function reviews()
+    {
+        return Review::all();
+    }
+
+    // Store a new author
+    public function storeAuthor(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
-        return Libretto::create($request->all());
+        return Author::create($request->all());
     }
 
-    public function show($id)
+    // Store a new book
+    public function storeBook(Request $request)
     {
-        return Libretto::findOrFail($id);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author_id' => 'required|exists:authors,id',
+            'genre_id' => 'required|exists:genres,id',
+        ]);
+
+        return Book::create($request->all());
     }
 
-    public function update(Request $request, $id)
+    // Store a new genre
+    public function storeGenre(Request $request)
     {
-        $libretto = Libretto::findOrFail($id);
-        $libretto->update($request->all());
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
 
-        return $libretto;
+        return Genre::create($request->all());
     }
 
-    public function destroy($id)
+    // Store a new review
+    public function storeReview(Request $request)
     {
-        $libretto = Libretto::findOrFail($id);
-        $libretto->delete();
+        $request->validate([
+            'content' => 'required|string',
+            'book_id' => 'required|exists:books,id',
+        ]);
 
-        return response()->noContent();
+        return Review::create($request->all());
     }
 }
